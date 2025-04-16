@@ -1,0 +1,20 @@
+@EventApp_HostAddress = https://localhost:7178
+
+POST {{EventApp_HostAddress}}/api/category
+Content-Type: application/json
+
+{
+  "name": "Test Category",
+  "sortingOrder": "1"
+}
+###
+
+
+GET {{EventApp_HostAddress}}/api/category
+
+###
+
+@id=1
+GET {{EventApp_HostAddress}}/api/Category/{{id}}
+
+###
