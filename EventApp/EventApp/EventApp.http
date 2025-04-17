@@ -4,17 +4,16 @@ POST {{EventApp_HostAddress}}/api/category
 Content-Type: application/json
 
 {
-  "name": "Test Category",
+  "name": "Action",
   "sortingOrder": "1"
 }
-###
-
-
-GET {{EventApp_HostAddress}}/api/category
 
 ###
 
-@id=1
-GET {{EventApp_HostAddress}}/api/Category/{{id}}
+POST {{EventApp_HostAddress}}/api/category
+Content-Type: application/json
 
-###
+{
+  "name": "Music",
+  "sortingOrder": "2"
+}
