@@ -1,0 +1,24 @@
+[
+    {
+      "id": "ticket001",
+      "eventId": "evt001",
+      "type": "VIP",
+      "price": 1200000,
+      "quantity": 50
+    },
+    {
+      "id": "ticket002",
+      "eventId": "evt001",
+      "type": "General",
+      "price": 600000,
+      "quantity": 300
+    },
+    {
+      "id": "ticket003",
+      "eventId": "evt002",
+      "type": "Standard",
+      "price": 90000,
+      "quantity": 100
+    }
+]
+  
