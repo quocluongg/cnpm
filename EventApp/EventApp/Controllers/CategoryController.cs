@@ -1,6 +1,7 @@
 ﻿using EventApp.DataAccess.Data;
 using EventApp.DataAccess.Repository.IRepository;
 using EventApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace EventApp.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
+[Authorize]
 public class CategoryController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
