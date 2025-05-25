@@ -1,15 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventApp.Models
 {
+    [Index(nameof(TenDanhMuc), IsUnique = true)]
     public class Category
     {
         public int Id { get; set; }
         [Required]
-        public string? Name { get; set; }
-        [Required]
-        [Range(1,100, ErrorMessage = "Sorting Order must be between 1 and 100.")]
-        [Display(Name = "Sorting Order")]
-        public int SortingOrder { get; set; }
+        [StringLength(100, ErrorMessage = "The category name must be between 1 and 100 characters long.")]
+        public string? TenDanhMuc { get; set; }
     }
 }

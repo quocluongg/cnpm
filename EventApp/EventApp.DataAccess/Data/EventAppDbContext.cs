@@ -17,26 +17,38 @@ namespace EventApp.DataAccess.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetProperties())
+                .Where(p => p.ClrType == typeof(string))
+                .ToList()
+                .ForEach(p => p.SetIsUnicode(false));
+            
             modelBuilder.Entity<Category>().HasData(
                 new Category
                 {
                     Id = 1,
-                    Name = "Music",
-                    SortingOrder = 1
+                    TenDanhMuc = "Music",
                 },
                 new Category
                 {
                     Id = 2,
-                    Name = "Sports",
-                    SortingOrder = 2
+                    TenDanhMuc = "Sports",
                 },
                 new Category
                 {
                     Id = 3,
-                    Name = "Arts",
-                    SortingOrder = 3
+                    TenDanhMuc = "Arts",
                 }
             );
+            
+            modelBuilder.Entity<EventCategory>()
+                .HasKey(ec => new { ec.EventId, ec.CategoryId });
+            
+            modelBuilder.Entity<PromotionOrder>()
+                .HasKey(ec => new { ec.PromotionId, ec.OrderId });
+            
+            modelBuilder.Entity<ExtrasOrder>()
+                .HasKey(ec => new { ec.ExtrasId, ec.OrderId });
         }
     }
 }

@@ -1,20 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EventApp.Utility;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventApp.Models
 {
+    [Index(nameof(MaVe), IsUnique = true)]
     public class Ticket
     {
         public int Id { get; set; }
         [Required]
-        public int EventId { get; set; }
+        [StringLength(20, ErrorMessage = "The ticket name must be between 1 and 20 characters long.")]
+        public string? MaVe { get; set; }
         [Required]
-        public int UserId { get; set; }
+        public string? TrangThai { get; set; } = SD.TicketStatusValid;
         
-        [ForeignKey("EventId")]
-        public Event? Event { get; set; }
+        [Required]
+        public int OrderDetailId { get; set; }
+        [ForeignKey("OrderDetailId")]
+        public OrderDetail? OrderDetail { get; set; }
         
-        [ForeignKey("UserId")]
-        public User? User { get; set; }
+        [Required]
+        public int SeatId { get; set; }
+        [ForeignKey("SeatId")]
+        public Seat? Seat { get; set; }
     }
 }

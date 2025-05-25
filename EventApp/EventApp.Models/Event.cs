@@ -8,20 +8,22 @@ namespace EventApp.Models
     {
         public int Id { get; set; }
         [Required]
-        public string? Name { get; set; }
+        [StringLength(255, ErrorMessage = "The event name must be between 1 and 255 characters long.")]
+        public string? TenSuKien { get; set; }
+        public string? MoTa { get; set; }
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime ThoiGianBatDau { get; set; }
         [Required]
-        public string? Location { get; set; }
+        public DateTime ThoiGianKetThuc { get; set; }
+        [StringLength(255, ErrorMessage = "The image URL must be between 1 and 255 characters long.")]
+        public string? HinhAnh { get; set; }
         [Required]
-        public string? Banner { get; set; }
+        public DateTime NgayTao { get; set; }
+        
         [Required]
-        public int Price { get; set; }
-        [Required]
-        public int CategoryId { get; set; }
-
+        public int? UserId { get; set; }
+        [ForeignKey("UserId")]
         [ValidateNever]
-        [ForeignKey("CategoryId")]
-        public Category? Category { get; set; }
+        public User? User { get; set; }
     }
 }
