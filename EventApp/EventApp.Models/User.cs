@@ -5,15 +5,29 @@ namespace EventApp.Models
 {
     public class User
     {
+        [Key]
         public int Id { get; set; }
+
+        [Required, EmailAddress, StringLength(255)]
+        public string Email { get; set; }
+
+        [Required, StringLength(50, MinimumLength = 3)]
+        public string Username { get; set; }
+
+        [Required, StringLength(100, MinimumLength = 8)]
+        public string Password { get; set; }
+
+        [Required, StringLength(100)]
+        public string FullName { get; set; }
+
+        [Required, StringLength(20)]
+        public string Role { get; set; } = "user";
+
         [Required]
-        public string? Name { get; set; }
-        [Required]
-        [RegularExpression(@"^\d+$", ErrorMessage = "The phone number must contain only numeric characters.")]
-        public string? PhoneNumber { get; set; }
-        [Required]
-        public string? Address { get; set; }
-        [Required]
-        public DateOnly DoB { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+        // Navigation properties
+        public ICollection<Event> OrganizedEvents { get; set; } = new List<Event>();
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

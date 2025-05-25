@@ -15,13 +15,11 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
 
 	public void Update(Category category)
 	{
-		// _db.Update(category);
 		var objectFromDb = _db.Categories.FirstOrDefault(u => u.Id == category.Id);
 		
 		if (objectFromDb != null)
 		{
-			objectFromDb.Name = category.Name;
-			objectFromDb.SortingOrder = category.SortingOrder;
+			objectFromDb.TenDanhMuc = category.TenDanhMuc;
 		}
 		else
 		{

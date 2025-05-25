@@ -1,15 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventApp.Models
 {
     public class Category
     {
+        [Key]
         public int Id { get; set; }
-        [Required]
-        public string? Name { get; set; }
-        [Required]
-        [Range(1,100, ErrorMessage = "Sorting Order must be between 1 and 100.")]
-        [Display(Name = "Sorting Order")]
-        public int SortingOrder { get; set; }
+
+        [Required, StringLength(100)]
+        public string CategoryName { get; set; }
+
+        // Navigation properties
+        public ICollection<EventCategory> EventCategories { get; set; } = new List<EventCategory>();
     }
 }

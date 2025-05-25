@@ -19,8 +19,8 @@ public class TicketRepository : Repository<Ticket>, ITicketRepository
 		
 		if (objectFromDb != null)
 		{
-			objectFromDb.EventId = ticket.EventId;
-			objectFromDb.UserId = ticket.UserId;
+			// objectFromDb.EventId = ticket.EventId;
+			// objectFromDb.UserId = ticket.UserId;
 		}
 		else
 		{

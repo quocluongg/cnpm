@@ -19,15 +19,18 @@ public class EventRepository : Repository<Event>, IEventRepository
 		
 		if (objectFromDb != null)
 		{
-			objectFromDb.Name = @event.Name;
-			objectFromDb.Date = @event.Date;
-			objectFromDb.Location = @event.Location;
-			objectFromDb.Price = @event.Price;
-			objectFromDb.CategoryId = @event.CategoryId;
+			objectFromDb.TenSuKien = @event.TenSuKien;
+			objectFromDb.ThoiGianBatDau = @event.ThoiGianBatDau;
+			objectFromDb.ThoiGianKetThuc = @event.ThoiGianKetThuc;
+			objectFromDb.NgayTao = @event.NgayTao;
 			
-			if (@event.Banner != null)
+			if (@event.HinhAnh != null)
 			{
-				objectFromDb.Banner = @event.Banner;
+				objectFromDb.HinhAnh = @event.HinhAnh;
+			}
+			if (@event.MoTa != null)
+			{
+				objectFromDb.MoTa = @event.MoTa;
 			}
 		}
 		else
