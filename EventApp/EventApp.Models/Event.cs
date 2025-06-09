@@ -10,7 +10,7 @@ namespace EventApp.Models
         public int Id { get; set; }
 
         [ForeignKey("Organizer")]
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
 
         [Required, StringLength(255)]
         public string EventName { get; set; }

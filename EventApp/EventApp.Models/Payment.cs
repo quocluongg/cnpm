@@ -22,6 +22,7 @@ public class Payment
     public string Method { get; set; }
 
     [Required, Range(0, 1000000)]
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Amount { get; set; }
 
     [Required]

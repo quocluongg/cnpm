@@ -5,69 +5,31 @@ using EventApp.DataAccess.Repository.IRepository;
 
 namespace EventApp.DataAccess.Repository;
 
-public abstract class Repository<T> : IRepository<T> where T : class
+public class Repository<T> : IRepository<T> where T : class
 {
-	private readonly EventAppDbContext _db;
-	private readonly DbSet<T> _dbSet;
+	protected readonly EventAppDbContext _context;
+	protected readonly DbSet<T> _dbSet;
 
-	protected Repository(EventAppDbContext db)
+	public Repository(EventAppDbContext context)
 	{
-		_db = db;
-		_dbSet = _db.Set<T>();
+		_context = context;
+		_dbSet = context.Set<T>();
 	}
 
-	public void Add(T entity)
-	{
-		_dbSet.Add(entity);
-	}
+	public async Task<T> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
 
-	public IEnumerable<T> GetAll(string? includeProperties = null)
-	{
-		IQueryable<T> query = _dbSet;
+	public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
 
-		if (!string.IsNullOrEmpty(includeProperties))
-		{
-			foreach (var includeProp in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
-			{
-				query = query.Include(includeProp.Trim());
-			}
-		}
+	public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+		=> await _dbSet.Where(predicate).ToListAsync();
 
-		return query.ToList();
-	}
+	public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
 
-	public T? Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracking = false)
-	{
-		IQueryable<T> query;
-		if (!tracking)
-		{
-			query = _dbSet.AsNoTracking();
-		}
-		else
-		{
-			query = _dbSet;
-		}
+	public async Task AddRangeAsync(IEnumerable<T> entities) => await _dbSet.AddRangeAsync(entities);
 
-		query = query.Where(filter);
+	public void Update(T entity) => _dbSet.Update(entity);
 
-		if (!string.IsNullOrEmpty(includeProperties))
-		{
-			foreach (var includeProp in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
-			{
-				query = query.Include(includeProp.Trim());
-			}
-		}
+	public void Remove(T entity) => _dbSet.Remove(entity);
 
-		return query.FirstOrDefault();
-	}
-
-	public void Remove(T entity)
-	{
-		_dbSet.Remove(entity);
-	}
-
-	public void RemoveRange(IEnumerable<T> entity)
-	{
-		_dbSet.RemoveRange(entity);
-	}
+	public void RemoveRange(IEnumerable<T> entities) => _dbSet.RemoveRange(entities);
 }

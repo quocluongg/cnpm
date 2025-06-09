@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventApp.Models;
@@ -12,6 +13,7 @@ public class Promotion
     public string PromotionCode { get; set; }
 
     [Required, Range(0, 100)]
+    [Column(TypeName = "decimal(18,2)")]
     public decimal DiscountPercent { get; set; }
 
     [Required, Range(0, 1000)]

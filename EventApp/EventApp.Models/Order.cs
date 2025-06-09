@@ -14,6 +14,7 @@ public class Order
     public int UserId { get; set; }
 
     [Required, Range(0, 1000000)]
+    [Column(TypeName = "decimal(18,2)")]
     public decimal TotalAmount { get; set; }
 
     [Required]

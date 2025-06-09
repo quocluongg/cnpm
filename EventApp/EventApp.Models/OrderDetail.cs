@@ -15,6 +15,7 @@ public class OrderDetail
     public int TicketTypeId { get; set; }
 
     [Required, Range(0, 10000)]
+    [Column(TypeName = "decimal(18,2)")]
     public decimal UnitPrice { get; set; }
 
     [Required, Range(1, 100)]

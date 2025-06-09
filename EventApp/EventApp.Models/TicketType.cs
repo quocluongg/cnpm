@@ -16,6 +16,7 @@ public class TicketType
     public string TypeName { get; set; }
 
     [Required, Range(0, 10000)]
+    [Column(TypeName = "decimal(18,2)")]
     public decimal BasePrice { get; set; }
 
     [Required, Range(0, 100000)]
