@@ -25,7 +25,7 @@ namespace EventApp.Models
         public DateTime EndTime { get; set; }
 
         [Url, StringLength(500)]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         [Required]
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
