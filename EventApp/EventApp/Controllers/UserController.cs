@@ -15,7 +15,8 @@ public class UserController(IUnitOfWork unitOfWork) : Controller
     public async Task<IActionResult> GetAllUser()
     {
         var users = await unitOfWork.Users.GetAllAsync();
-        return Ok(users);
+        var userDtos = users.Adapt<IEnumerable<UserDto>>();
+        return Ok(userDtos);
     }
 
     [HttpGet("{id}")]
@@ -23,7 +24,8 @@ public class UserController(IUnitOfWork unitOfWork) : Controller
     {
         var user = await unitOfWork.Users.GetByIdAsync(id);
         if (user == null) return NotFound();
-        return Ok(user);
+        var userDto = user.Adapt<UserDto>();
+        return Ok(userDto);
     }
 
     [HttpPost]
@@ -31,9 +33,9 @@ public class UserController(IUnitOfWork unitOfWork) : Controller
     {
         // if (!ModelState.IsValid) return BadRequest(ModelState);
         var user = userDto.Adapt<User>();
-        await unitOfWork.Users.AddAsync(user);
+        var result = await unitOfWork.Users.AddAsync(user);
         await unitOfWork.CompleteAsync();
-        return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+        return Ok(result.Adapt<UserDto>());
     }
 
     [HttpPost("login")]
@@ -46,7 +48,7 @@ public class UserController(IUnitOfWork unitOfWork) : Controller
             if (userList.Any())
             {
                 var user = userList.FirstOrDefault();
-                return Ok(new { Message = "Login successful", User = user }); // Here you would typically generate a JWT token and return it
+                return Ok(new { Message = "Login successful", User = user.Adapt<UserDto>() });
             }
         }
         else if (!string.IsNullOrEmpty(userDto.Username))
@@ -56,7 +58,7 @@ public class UserController(IUnitOfWork unitOfWork) : Controller
             if (userList.Any())
             {
                 var user = userList.FirstOrDefault();
-                return Ok(new { Message = "Login successful", User = user }); // Here you would typically generate a JWT token and return it
+                return Ok(new { Message = "Login successful", User = user.Adapt<UserDto>() });
             }
         }
 
@@ -79,7 +81,8 @@ public class UserController(IUnitOfWork unitOfWork) : Controller
 
         unitOfWork.Users.Update(existingUser);
         await unitOfWork.CompleteAsync();
-        return NoContent();
+        
+        return Ok(existingUser.Adapt<UserDto>());
     }
 
     [HttpDelete("{id}")]

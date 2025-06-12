@@ -1,76 +1,93 @@
-//using EventApp.DataAccess.Repository.IRepository;
-//using EventApp.Models;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
+using EventApp.DataAccess.Repository.IRepository;
+using EventApp.Models;
+using EventApp.Models.Dtos;
+using EventApp.Utility;
+using Mapster;
+using Microsoft.AspNetCore.Mvc;
 
-//namespace EventApp.Controllers;
+namespace EventApp.Controllers;
 
-//[ApiController]
-//[Route("/api/[controller]")]
-//[Authorize]
-//public class TicketController : Controller
-//{
-//	private readonly IUnitOfWork _unitOfWork;
-  
-//      public TicketController(IUnitOfWork unitOfWork)
-//      {
-//          _unitOfWork = unitOfWork;
-//      }
-  
-//      [HttpGet]
-//      public IActionResult GetAll()
-//      {
-//          var events = _unitOfWork.Ticket.GetAll().ToList();
-//          return Ok(events);
-//      }
-          
-//      [HttpGet("{id}")]
-//      public IActionResult Get(int id)
-//      {
-//          var @event = _unitOfWork.Ticket.Get(c => c.Id == id);
-//          if (@event == null)
-//          {
-//              return NotFound();
-//          }
-//          return Ok(@event);
-//      }
-          
-//      [HttpPost]
-//      public IActionResult Create([FromBody] Ticket ticket)
-//      {
-//          if (ticket == null)
-//          {
-//              return BadRequest();
-//          }
-//          _unitOfWork.Ticket.Add(ticket);
-//          _unitOfWork.Save();
-//          return CreatedAtAction(nameof(Get), new { id = ticket.Id }, ticket);
-//      }
-          
-//      [HttpPut("{id}")]
-//      public IActionResult Update(int id, [FromBody] Ticket ticket)
-//      {
-//          if (ticket == null || ticket.Id != id)
-//          {
-//              return BadRequest();
-//          }
-          
-//          _unitOfWork.Ticket.Update(ticket);
-//          _unitOfWork.Save();
-//          return NoContent();
-//      }
-  
-//      [HttpDelete("{id}")]
-//      public IActionResult Delete(int id)
-//      {
-//          var ticket = _unitOfWork.Ticket.Get(c => c.Id == id);
-//          if (ticket == null)
-//          {
-//              return NotFound();
-//          }
-  
-//          _unitOfWork.Ticket.Remove(ticket);
-//          _unitOfWork.Save();
-//          return NoContent();
-//      }
-//}
+[ApiController]
+[Route("/api/[controller]")]
+public class TicketController(IUnitOfWork unitOfWork) : Controller
+{
+    [HttpGet]
+    public async Task<IActionResult> GetAllTickets()
+    {
+        var tickets = await unitOfWork.Tickets.GetAllAsync();
+        var ticketDtos = tickets.Select(ticket => ticket.Adapt<TicketDto>()).ToList();
+        return Ok(tickets);
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetTicketById(int id)
+    {
+        var ticket = await unitOfWork.Tickets.GetByIdAsync(id);
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+        var ticketDto = ticket.Adapt<TicketDto>();
+        return Ok(ticketDto);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateNewTicket([FromBody] TicketDto? ticketDto)
+    {
+        if (ticketDto == null)
+        {
+            return BadRequest();
+        }
+        var ticket = new Ticket
+        {
+            OrderDetailId = ticketDto.OrderDetailId,
+            TicketCode = ticketDto.TicketCode,
+            Status = SD.TicketStatusValid,
+        };
+        var result = await unitOfWork.Tickets.AddAsync(ticket);
+        await unitOfWork.CompleteAsync();
+        return Ok(result.Adapt<TicketDto>());
+    }
+    
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateTicket(int id, [FromBody] TicketDto? ticketDto)
+    {
+        if (ticketDto == null)
+        {
+            return BadRequest();
+        }
+
+        var ticket = await unitOfWork.Tickets.GetByIdAsync(id);
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        ticket.OrderDetailId = ticketDto.OrderDetailId;
+        ticket.TicketCode = ticketDto.TicketCode;
+        if (string.IsNullOrEmpty(ticketDto.Status))
+        {
+            ticket.Status = ticketDto.Status;
+        }
+
+        unitOfWork.Tickets.Update(ticket);
+        await unitOfWork.CompleteAsync();
+        
+        return Ok(ticket.Adapt<TicketDto>());
+    }
+    
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteTicket(int id)
+    {
+        var ticket = await unitOfWork.Tickets.GetByIdAsync(id);
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        unitOfWork.Tickets.Remove(ticket);
+        await unitOfWork.CompleteAsync();
+
+        return NoContent();
+    }
+}

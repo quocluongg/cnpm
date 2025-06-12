@@ -77,14 +77,10 @@ public class EventController(IUnitOfWork unitOfWork) : Controller
         
         eventItem.UserId = eventDto.UserId;
         
-        await unitOfWork.Events.AddAsync(eventItem);
+        var result = await unitOfWork.Events.AddAsync(eventItem);
         await unitOfWork.CompleteAsync();
         
-        return CreatedAtAction(
-            nameof(GetEventById), 
-            new { id = eventItem.Id }, 
-            eventItem
-        );
+        return Ok(result.Adapt<EventDto>());
     }
         
     [HttpPut("{id:int}")]
@@ -112,7 +108,8 @@ public class EventController(IUnitOfWork unitOfWork) : Controller
 
         unitOfWork.Events.Update(eventItem);
         await unitOfWork.CompleteAsync();
-        return NoContent();
+        
+        return Ok(eventItem.Adapt<EventDto>());
     }
     
     [HttpPut("{id:int}/image")]
@@ -132,7 +129,8 @@ public class EventController(IUnitOfWork unitOfWork) : Controller
         eventItem.ImageUrl = imageUrl;
         unitOfWork.Events.Update(eventItem);
         await unitOfWork.CompleteAsync();
-        return NoContent();
+        
+        return Ok(eventItem.Adapt<EventDto>());
     }
     
     [HttpPost("{id:int}/ticket-types")]
@@ -151,14 +149,10 @@ public class EventController(IUnitOfWork unitOfWork) : Controller
         
         var ticketType = ticketTypeDto.Adapt<TicketType>();
         ticketType.EventId = id; // Associate the ticket type with the event
-        await unitOfWork.TicketTypes.AddAsync(ticketType);
+        var result = await unitOfWork.TicketTypes.AddAsync(ticketType);
         await unitOfWork.CompleteAsync();
         
-        return CreatedAtAction(
-            nameof(GetEventById), 
-            new { id = eventItem.Id }, 
-            ticketType
-        );
+        return Ok(result.Adapt<TicketTypeDto>());
     }
     
     [HttpPost("{id:int}/categories")]
@@ -186,7 +180,7 @@ public class EventController(IUnitOfWork unitOfWork) : Controller
         unitOfWork.Events.Update(eventItem);
         await unitOfWork.CompleteAsync();
         
-        return NoContent();
+        return Ok(eventItem.Adapt<EventDto>());
     }
     
     [HttpDelete("{id:int}")]

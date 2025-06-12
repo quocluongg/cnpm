@@ -1,6 +1,7 @@
 ﻿using EventApp.DataAccess.Repository.IRepository;
 using EventApp.Models;
 using EventApp.Models.Dtos;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,8 @@ public class CategoryController(IUnitOfWork unitOfWork) : Controller
         {
             return NotFound();
         }
-        return Ok(category);
+        var categoryDto = category.Adapt<CategoryDto>();
+        return Ok(categoryDto);
     }
         
     [HttpPost]
@@ -39,14 +41,10 @@ public class CategoryController(IUnitOfWork unitOfWork) : Controller
         {
             CategoryName = categoryDto.CategoryName
         };
-        await unitOfWork.Categories.AddAsync(category);
+        var result = await unitOfWork.Categories.AddAsync(category);
         await unitOfWork.CompleteAsync();
-        return CreatedAtAction(
-            nameof(GetCategoryById), 
-            new { id = category.Id }, 
-            category
+        return Ok(result.Adapt<CategoryDto>()
         );
-
     }
         
     [HttpPut("{id:int}")]
@@ -67,7 +65,7 @@ public class CategoryController(IUnitOfWork unitOfWork) : Controller
         unitOfWork.Categories.Update(category);
         await unitOfWork.CompleteAsync();
         
-        return NoContent();
+        return Ok(category.Adapt<CategoryDto>());
     }
 
     [HttpDelete("{id:int}")]

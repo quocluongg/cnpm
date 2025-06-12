@@ -4,7 +4,7 @@ namespace EventApp.Models.Dtos;
 
 public class EventDto
 {
-    public int? Id { get; set; }
+    public int Id { get; set; }
         
     public required int UserId { get; set; }
         

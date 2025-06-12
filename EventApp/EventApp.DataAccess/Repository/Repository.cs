@@ -23,7 +23,11 @@ public class Repository<T> : IRepository<T> where T : class
 	public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
 		=> await _dbSet.Where(predicate).ToListAsync();
 
-	public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
+	public async Task<T> AddAsync(T entity)
+	{
+		var result = await _dbSet.AddAsync(entity);
+		return result.Entity;
+	}
 
 	public async Task AddRangeAsync(IEnumerable<T> entities) => await _dbSet.AddRangeAsync(entities);
 

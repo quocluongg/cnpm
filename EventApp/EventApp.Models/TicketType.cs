@@ -27,6 +27,6 @@ public class TicketType
 
     // Navigation properties
     public Event Event { get; set; }
-    public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
-    public ICollection<Seat> Seats { get; set; } = new List<Seat>();
+    public ICollection<OrderDetail> OrderDetails { get; set; }
+    public ICollection<Seat> Seats { get; set; }
 }
