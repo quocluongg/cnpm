@@ -13,7 +13,7 @@ public static class SD
     public const string TicketStatusValid = "valid";
     public const string TicketStatusUsed = "used";
     public const string TicketStatusExpired = "expired";
-    public const string TicketStatusCancelled = "cancelled";
+    public const string TicketStatusInvalid = "cancelled";
     
     public const string OrderStatusPending = "pending";
     public const string OrderStatusCompleted = "completed";
