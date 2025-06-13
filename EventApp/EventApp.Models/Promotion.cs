@@ -26,7 +26,7 @@ public class Promotion
     public DateTime EndDate { get; set; }
 
     [StringLength(500)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     // Navigation property
     public ICollection<PromotionOrder> PromotionOrders { get; set; } = new List<PromotionOrder>();
