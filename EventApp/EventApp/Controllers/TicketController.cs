@@ -76,6 +76,54 @@ public class TicketController(IUnitOfWork unitOfWork) : Controller
         return Ok(ticket.Adapt<TicketDto>());
     }
     
+    [HttpPut("{id:int}/invalidate")]
+    public async Task<IActionResult> InvalidateTicket(int id)
+    {
+        var ticket = await unitOfWork.Tickets.GetByIdAsync(id);
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        ticket.Status = SD.TicketStatusInvalid;
+        unitOfWork.Tickets.Update(ticket);
+        await unitOfWork.CompleteAsync();
+
+        return Ok(ticket.Adapt<TicketDto>());
+    }
+    
+    [HttpPut("{id:int}/validate")]
+    public async Task<IActionResult> ValidateTicket(int id)
+    {
+        var ticket = await unitOfWork.Tickets.GetByIdAsync(id);
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        ticket.Status = SD.TicketStatusValid;
+        unitOfWork.Tickets.Update(ticket);
+        await unitOfWork.CompleteAsync();
+
+        return Ok(ticket.Adapt<TicketDto>());
+    }
+    
+    [HttpPut("{id:int}/expire")]
+    public async Task<IActionResult> ExpireTicket(int id)
+    {
+        var ticket = await unitOfWork.Tickets.GetByIdAsync(id);
+        if (ticket == null)
+        {
+            return NotFound();
+        }
+
+        ticket.Status = SD.TicketStatusExpired;
+        unitOfWork.Tickets.Update(ticket);
+        await unitOfWork.CompleteAsync();
+
+        return Ok(ticket.Adapt<TicketDto>());
+    }
+    
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteTicket(int id)
     {

@@ -3,6 +3,7 @@ using EventApp.Models;
 using EventApp.Models.Dtos;
 using EventApp.DataAccess.Data;
 using EventApp.DataAccess.Repository.IRepository;
+using EventApp.Utility;
 using Mapster;
 
 namespace EventApp.Controllers;
@@ -63,13 +64,39 @@ public class OrderController(IUnitOfWork unitOfWork) : ControllerBase
         return Ok(order.Adapt<OrderDto>());
     }
     
-    [HttpPut("{id:int}/status")]
-    public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] string status)
+    [HttpPut("{id:int}/complete")]
+    public async Task<IActionResult> UpdateOrderStatusToComplete(int id)
     {
         var order = await unitOfWork.Orders.GetByIdAsync(id);
         if (order == null) return NotFound();
         
-        order.Status = status;
+        order.Status = SD.OrderStatusCompleted;
+        unitOfWork.Orders.Update(order);
+        await unitOfWork.CompleteAsync();
+        
+        return Ok(order.Adapt<OrderDto>());
+    }
+    
+    [HttpPut("{id:int}/pending")]
+    public async Task<IActionResult> UpdateOrderStatusToPending(int id)
+    {
+        var order = await unitOfWork.Orders.GetByIdAsync(id);
+        if (order == null) return NotFound();
+        
+        order.Status = SD.OrderStatusPending;
+        unitOfWork.Orders.Update(order);
+        await unitOfWork.CompleteAsync();
+        
+        return Ok(order.Adapt<OrderDto>());
+    }
+    
+    [HttpPut("{id:int}/cancel")]
+    public async Task<IActionResult> UpdateOrderStatusToCancel(int id)
+    {
+        var order = await unitOfWork.Orders.GetByIdAsync(id);
+        if (order == null) return NotFound();
+        
+        order.Status = SD.OrderStatusCancelled;
         unitOfWork.Orders.Update(order);
         await unitOfWork.CompleteAsync();
         
