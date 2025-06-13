@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using EventApp.Models;
 using EventApp.Models.Dtos;
-using EventApp.DataAccess.Data;
 using EventApp.DataAccess.Repository.IRepository;
 using EventApp.Utility;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EventApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class OrderController(IUnitOfWork unitOfWork) : ControllerBase
 {
     [HttpGet]

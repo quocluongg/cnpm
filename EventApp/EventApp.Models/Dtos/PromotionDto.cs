@@ -2,19 +2,19 @@ namespace EventApp.Models.Dtos;
 
 public class PromotionDto
 {
-    public int Id { get; set; }
+    public int Id { get; set; } = 0;
 
-    public string PromotionCode { get; set; }
+    public string? PromotionCode { get; set; }
 
-    public decimal DiscountPercent { get; set; }
+    public decimal DiscountPercent { get; set; } = 0;
 
-    public int UsageLimit { get; set; }
+    public int UsageLimit { get; set; } = 0;
 
-    public DateTime StartDate { get; set; }
+    public DateTime StartDate { get; set; } = DateTime.UtcNow;
 
-    public DateTime EndDate { get; set; }
+    public DateTime EndDate { get; set; } = DateTime.UtcNow.AddDays(30);
 
-    public string? Description { get; set; }
+    public string? Description { get; set; } = null;
     
     public ICollection<int>? OrderIds { get; set; }
 }

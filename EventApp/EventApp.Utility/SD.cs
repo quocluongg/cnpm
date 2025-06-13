@@ -18,4 +18,7 @@ public static class SD
     public const string OrderStatusPending = "pending";
     public const string OrderStatusCompleted = "completed";
     public const string OrderStatusCancelled = "cancelled";
+    
+    public const string UserRole = "User";
+    public const string AdminRole = "Admin";
 }

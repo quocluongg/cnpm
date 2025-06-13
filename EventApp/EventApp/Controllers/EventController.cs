@@ -9,6 +9,7 @@ namespace EventApp.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
+[Authorize]
 public class EventController(IUnitOfWork unitOfWork) : Controller
 {
     [HttpGet]
@@ -98,13 +99,35 @@ public class EventController(IUnitOfWork unitOfWork) : Controller
         }
         
         // Map the properties from eventDto to eventItem
-        eventItem.EventName = eventDto.EventName;
-        eventItem.Description = eventDto.Description;
-        eventItem.StartTime = eventDto.StartTime;
-        eventItem.EndTime = eventDto.EndTime;
-        eventItem.ImageUrl = eventDto.ImageUrl;
-        eventItem.Location = eventDto.Location;
-        eventItem.UserId = eventDto.UserId;
+        if (!string.IsNullOrEmpty(eventDto.EventName))
+        {
+            eventItem.EventName = eventDto.EventName;
+        }
+        if (!string.IsNullOrEmpty(eventDto.Description))
+        {
+            eventItem.Description = eventDto.Description;
+        }
+        if (!string.IsNullOrEmpty(eventDto.ImageUrl))
+        {
+            eventItem.ImageUrl = eventDto.ImageUrl;
+        }
+        if (!string.IsNullOrEmpty(eventDto.Location))
+        {
+            eventItem.Location = eventDto.Location;
+        }
+        if (eventDto.UserId > 0 && eventItem.UserId != eventDto.UserId)
+        {
+            eventItem.UserId = eventDto.UserId;
+        }
+        
+        if (eventDto.StartTime != null && eventDto.StartTime > DateTime.UtcNow)
+        {
+            eventItem.StartTime = (DateTime)eventDto.StartTime;
+        }
+        if (eventDto.EndTime != null && eventDto.EndTime > eventItem.StartTime)
+        {
+            eventItem.EndTime = (DateTime)eventDto.EndTime;
+        }
 
         unitOfWork.Events.Update(eventItem);
         await unitOfWork.CompleteAsync();

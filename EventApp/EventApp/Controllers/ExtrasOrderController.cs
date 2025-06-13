@@ -3,11 +3,13 @@ using EventApp.Models;
 using EventApp.Models.Dtos;
 using EventApp.DataAccess.Repository.IRepository;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EventApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ExtrasOrderController(IUnitOfWork unitOfWork) : ControllerBase
 {
     [HttpGet]
@@ -34,7 +36,7 @@ public class ExtrasOrderController(IUnitOfWork unitOfWork) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create(ExtrasOrderDto dto)
+    public async Task<ActionResult> Create(ExtrasOrderDto? dto)
     {
         if (dto == null) return BadRequest();
         var extrasOrder = dto.Adapt<ExtrasOrder>();

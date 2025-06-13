@@ -3,12 +3,14 @@ using EventApp.Models;
 using EventApp.Models.Dtos;
 using EventApp.Utility;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PaymentController(IUnitOfWork unitOfWork) : Controller
 {
     [HttpPost]
@@ -27,7 +29,7 @@ public class PaymentController(IUnitOfWork unitOfWork) : Controller
         var result = await unitOfWork.Payments.AddAsync(payment);
         await unitOfWork.CompleteAsync();
 
-        return Created(string.Empty, payment.Adapt<PaymentDto>());
+        return Created(string.Empty, result.Adapt<PaymentDto>());
     }
     
     [HttpGet("{id:int}")]

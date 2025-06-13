@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using EventApp.Models;
 using EventApp.Models.Dtos;
-using EventApp.DataAccess.Data;
 using EventApp.DataAccess.Repository.IRepository;
 using Mapster;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EventApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ExtrasController(IUnitOfWork unitOfWork) : ControllerBase
 {
     [HttpGet]
@@ -35,9 +35,23 @@ public class ExtrasController(IUnitOfWork unitOfWork) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ExtrasDto>> Create(ExtrasDto dto)
+    public async Task<ActionResult<ExtrasDto>> Create(ExtrasDto? dto)
     {
         if (dto == null) return BadRequest();
+
+        if (string.IsNullOrEmpty(dto.ItemName))
+        {
+            return BadRequest("Item name cannot be null or empty.");
+        }
+        if (dto.Price <= 0)
+        {
+            return BadRequest("Price must be greater than 0.");
+        }
+        if (string.IsNullOrEmpty(dto.Description))
+        {
+            return BadRequest("Description cannot be null or empty.");
+        }
+        
         var extra = new Extras
         {
             ItemName = dto.ItemName,
@@ -50,15 +64,26 @@ public class ExtrasController(IUnitOfWork unitOfWork) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, ExtrasDto dto)
+    public async Task<IActionResult> Update(int id, ExtrasDto? dto)
     {
         if (dto == null) return BadRequest();
         var extra = await unitOfWork.Extras.GetByIdAsync(id);
         if (extra == null) return NotFound();
         
-        extra.ItemName = dto.ItemName;
-        extra.Price = dto.Price;
-        extra.Description = dto.Description;
+        if (!string.IsNullOrEmpty(dto.ItemName))
+        {
+            extra.ItemName = dto.ItemName;
+
+        }
+        
+        if (dto.Price > 0)
+        {
+            extra.Price = dto.Price;
+        }
+        if (!string.IsNullOrEmpty(dto.Description))
+        {
+            extra.Description = dto.Description;
+        }
 
         unitOfWork.Extras.Update(extra);
         await unitOfWork.CompleteAsync();

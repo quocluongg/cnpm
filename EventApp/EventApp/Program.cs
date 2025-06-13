@@ -47,7 +47,28 @@ builder.Services.AddDbContext<EventAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            // Validate the token’s signature
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException())
+            ),
+                
+            // Validate the token's “iss” claim matches the expected issuer
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException(),
+
+            // Validate the token's “aud” claim matches the expected audience
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"] ?? throw new InvalidOperationException(),
+
+            // Validate the token’s expiration and not before (iat/nbf) times
+            ValidateLifetime = true,
+        };
+    });
 
 builder.Services.AddAuthorization();
 
@@ -71,7 +92,6 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<EventAppDbContext>();
     dbContext.Database.Migrate();
     
-    // Optional: Add database seeding here
     // await SeedData.Initialize(dbContext);
 }
 

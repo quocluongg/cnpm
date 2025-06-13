@@ -3,12 +3,14 @@ using EventApp.Models;
 using EventApp.Models.Dtos;
 using EventApp.Utility;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventApp.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
+[Authorize]
 public class TicketController(IUnitOfWork unitOfWork) : Controller
 {
     [HttpGet]
@@ -16,7 +18,7 @@ public class TicketController(IUnitOfWork unitOfWork) : Controller
     {
         var tickets = await unitOfWork.Tickets.GetAllAsync();
         var ticketDtos = tickets.Select(ticket => ticket.Adapt<TicketDto>()).ToList();
-        return Ok(tickets);
+        return Ok(ticketDtos);
     }
 
     [HttpGet("{id:int}")]
@@ -38,15 +40,25 @@ public class TicketController(IUnitOfWork unitOfWork) : Controller
         {
             return BadRequest();
         }
+        if (string.IsNullOrEmpty(ticketDto.TicketCode))
+        {
+            return BadRequest("Ticket code is null or empty.");
+        }
+        if (ticketDto.OrderDetailId <= 0)
+        {
+            return BadRequest("OrderDetailId must be greater than 0.");
+        }
         var ticket = new Ticket
         {
-            OrderDetailId = ticketDto.OrderDetailId,
             TicketCode = ticketDto.TicketCode,
             Status = SD.TicketStatusValid,
+            OrderDetailId = ticketDto.OrderDetailId,
         };
+        
         var result = await unitOfWork.Tickets.AddAsync(ticket);
         await unitOfWork.CompleteAsync();
-        return Ok(result.Adapt<TicketDto>());
+        
+        return Created(string.Empty, result.Adapt<TicketDto>());
     }
     
     [HttpPut("{id:int}")]
@@ -62,10 +74,19 @@ public class TicketController(IUnitOfWork unitOfWork) : Controller
         {
             return NotFound();
         }
+        
+        if (ticketDto.OrderDetailId > 0)
+        {
+            ticket.OrderDetailId = ticketDto.OrderDetailId;
+        }
 
-        ticket.OrderDetailId = ticketDto.OrderDetailId;
+        if (string.IsNullOrEmpty(ticketDto.TicketCode))
+        {
+            return BadRequest("Ticket code is null or empty.");
+        }
+
         ticket.TicketCode = ticketDto.TicketCode;
-        if (string.IsNullOrEmpty(ticketDto.Status))
+        if (!string.IsNullOrEmpty(ticketDto.Status))
         {
             ticket.Status = ticketDto.Status;
         }

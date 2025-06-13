@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using EventApp.Utility;
 
 namespace EventApp.Models
 {
@@ -21,7 +22,7 @@ namespace EventApp.Models
         public string FullName { get; set; }
 
         [Required, StringLength(20)]
-        public string Role { get; set; } = "user";
+        public string Role { get; set; } = SD.UserRole;
 
         [Required]
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;

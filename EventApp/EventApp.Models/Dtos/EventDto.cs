@@ -4,9 +4,9 @@ namespace EventApp.Models.Dtos;
 
 public class EventDto
 {
-    public int Id { get; set; }
+    public int Id { get; set; } = 0;
         
-    public required int UserId { get; set; }
+    public required int UserId { get; set; } = 0;
         
     [Required]
     [MaxLength(255)]
@@ -16,10 +16,10 @@ public class EventDto
     public string? Description { get; set; }
         
     [Required]
-    public DateTime StartTime { get; set; }
+    public DateTime? StartTime { get; set; }
         
     [Required]
-    public DateTime EndTime { get; set; }
+    public DateTime? EndTime { get; set; }
         
     [Url]
     [MaxLength(500)]

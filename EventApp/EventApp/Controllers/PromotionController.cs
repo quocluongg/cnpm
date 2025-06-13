@@ -2,12 +2,14 @@ using EventApp.DataAccess.Repository.IRepository;
 using EventApp.Models;
 using EventApp.Models.Dtos;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PromotionController(IUnitOfWork unitOfWork) : Controller
 {
     [HttpPost]
@@ -132,12 +134,36 @@ public class PromotionController(IUnitOfWork unitOfWork) : Controller
             return NotFound($"Promotion with ID {id} not found.");
         }
 
+        if (promotionDto.DiscountPercent is < 0 or > 100)
+        {
+            return BadRequest("Discount percent must be between 0 and 100.");
+        }
+        
+        if (promotionDto.StartDate <= DateTime.UtcNow)
+        {
+            return BadRequest("Start date must be in the future.");
+        }
+        
+        if (promotionDto.EndDate <= promotionDto.StartDate)
+        {
+            return BadRequest("End date must be after the start date.");
+        }
+        
+        if (promotionDto.UsageLimit > 0)
+        {
+            existingPromotion.UsageLimit = promotionDto.UsageLimit;
+        }
+        
+        if (!string.IsNullOrWhiteSpace(promotionDto.PromotionCode))
+        {
+            existingPromotion.PromotionCode = promotionDto.PromotionCode;
+        }
+        
         existingPromotion.DiscountPercent = promotionDto.DiscountPercent;
         existingPromotion.StartDate = promotionDto.StartDate;
         existingPromotion.EndDate = promotionDto.EndDate;
-        existingPromotion.UsageLimit = promotionDto.UsageLimit;
-        existingPromotion.PromotionCode = promotionDto.PromotionCode;
-
+        existingPromotion.Description = promotionDto.Description;
+        
         unitOfWork.Promotions.Update(existingPromotion);
         await unitOfWork.CompleteAsync();
         

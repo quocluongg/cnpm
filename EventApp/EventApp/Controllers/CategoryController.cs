@@ -1,6 +1,7 @@
 ﻿using EventApp.DataAccess.Repository.IRepository;
 using EventApp.Models;
 using EventApp.Models.Dtos;
+using EventApp.Utility;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ namespace EventApp.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
+[Authorize(Roles = SD.AdminRole)]
 public class CategoryController(IUnitOfWork unitOfWork) : Controller
 {
     [HttpGet]
@@ -37,6 +39,10 @@ public class CategoryController(IUnitOfWork unitOfWork) : Controller
         {
             return BadRequest();
         }
+        if (string.IsNullOrEmpty(categoryDto.CategoryName))
+        {
+            return BadRequest("Category name cannot be null or empty.");
+        }
         var category = new Category
         {
             CategoryName = categoryDto.CategoryName
@@ -59,6 +65,10 @@ public class CategoryController(IUnitOfWork unitOfWork) : Controller
         if (category == null)
         {
             return NotFound();
+        }
+        if (string.IsNullOrEmpty(categoryDto.CategoryName))
+        {
+            return BadRequest("Category name cannot be null or empty.");
         }
         category.CategoryName = categoryDto.CategoryName;
         

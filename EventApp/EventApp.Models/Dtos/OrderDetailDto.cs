@@ -2,13 +2,13 @@ namespace EventApp.Models.Dtos;
 
 public class OrderDetailDto
 {
-    public int Id { get; set; }
+    public int Id { get; set; } = 0;
 
-    public int OrderId { get; set; }
+    public int OrderId { get; set; } = 0;
 
-    public int TicketTypeId { get; set; }
+    public int TicketTypeId { get; set; } = 0;
     
-    public decimal UnitPrice { get; set; }
+    public decimal UnitPrice { get; set; } = 0;
 
-    public int Quantity { get; set; }
+    public int Quantity { get; set; } = 0;
 }
